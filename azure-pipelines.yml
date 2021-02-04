@@ -7,6 +7,7 @@ trigger:
   - "*"
 
 variables: 
+  group: ProductionValues
   buildConfiguration : 'Release'
   releaseBranchName: 'release'
 
@@ -133,7 +134,7 @@ stages:
   - deployment: Deploy
     pool:
       vmImage: 'ubuntu-18.04'
-    environment: staging
+    environment: staging #there is required approval set on the staging environment
     variables:
     - group: 'Release'
     strategy:
@@ -148,3 +149,4 @@ stages:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
               appName: '$(WebAppNameStaging)'
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
+              enableXmlVariableSubstitution: true
