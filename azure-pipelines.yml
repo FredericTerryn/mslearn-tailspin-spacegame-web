@@ -137,16 +137,25 @@ stages:
     environment: staging #there is required approval set on the staging environment
     variables:
     - group: 'Release'
+    - group: ProductionValues
+    - name: environment
+      value: $(environment)
     strategy:
       runOnce:
         deploy:
           steps:
           - download: current
             artifact: drop
+          - task:  AzureRmWebAppDeployment@4
+            inputs:
+              ConnectionType: Azure Resource Manager
+              azureSubscription: 'Resource Manager - Tailspin - Space Game'
+              appName: '$(WebAppNameStaging)'
+              package: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              JSONFiles: '**/appsettings.json'
           - task: AzureWebApp@1
             displayName: 'Azure App Service Deploy: website'
             inputs:
               azureSubscription: 'Resource Manager - Tailspin - Space Game'
               appName: '$(WebAppNameStaging)'
               package: '$(Pipeline.Workspace)/drop/$(buildConfiguration)/*.zip'
-              enableXmlVariableSubstitution: true
